@@ -10,22 +10,23 @@ var babelify = require('babelify');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
 var del = require('del');
+var shell = require('gulp-shell');
 
 var paths = {
-  client: ['client/*'],
+  // client: ['client/*'], // not used as watchify watches all files
   server: ['views/*', 'server/*']
 };
 var serverEntryPoint = './server/app.js';
 var clientEntryPoint = './client/app.js';
 
-// Not all tasks need to use streams
-// A gulpfile is just another node program and you can use any package available on npm
+// delete all compiled files
 gulp.task('clean', function() {
-  // You can use multiple globbing patterns as you would with `gulp.src`
-  return del(['public/build']);
+  // You can use multiple globbing patterns as you would with `gulp.src`..not using a stream
+  return del(['public/build', 'client/templates.js']);
 });
 
-gulp.task('scripts', ['clean'], function() {
+// build client-side scripts
+gulp.task('scripts', ['clean', 'templates'], function() {
   var bundler = watchify(browserify(clientEntryPoint, { debug: true }).transform(babelify));
 
   function rebundleJs() {
@@ -48,10 +49,13 @@ gulp.task('scripts', ['clean'], function() {
   rebundleJs();
 });
 
-
-gulp.task('default', function() {
-  // place code for your default task here
-  console.log('RUN DEFAULT');
+// compile templates
+gulp.task('templates', function (cb) {
+  gutil.log('Compiling templatates');
+  return gulp.src('.')
+    .pipe(shell([
+      'node lib/parse.js >> client/templates.js'
+    ]));
 });
 
 // Watch deals with server changes
@@ -66,31 +70,7 @@ gulp.task('server', function() {
   });
 });
 
-function string_src(filename, string) {
-  var src = require('stream').Readable({ objectMode: true })
-  src._read = function () {
-    this.push(new gutil.File({ cwd: "", base: "", path: filename, contents: new Buffer(string) }))
-    this.push(null)
-  }
-  return src
-}
-
 // <!------ OLD ---->
-
-// gulp.task('hogan', function() {
-//   var hogan = require("hogan.js");
-//   var template = "Hello {{world}}!";
-//   var hello = hogan.compile(template);
-//
-//   console.log(JSON.stringify(hello));
-//
-//   // Write data to file
-//   var stream = source('templates.js'); //file
-//   stream.end('write this to file'); //string to write
-//   stream.pipe(gulp.dest('')); //folder
-//
-//   // console.log(hello.render({world: "cfaig" }));
-// });
 
 // // ISSUE: gulp-babel or babelify both dont worth in this format.
 // gulp.task('scripts', ['clean'], function() {
