@@ -1,19 +1,9 @@
-import express from 'express';
-import routes from './routes';
-import server from './server';
-import mustacheExpress from 'mustache-express';
-const app = express();
+// Entry point
 
-// Register '.mustache' extension with The Mustache Express
-app.engine('mustache', mustacheExpress());
-app.set('view engine', 'mustache');
-app.set('views', __dirname + '/../views');
-app.use(express.static(__dirname + '/../public')); // set static folder
+require('babel/register');
+ //tells it to transform es6
+ // It hooks into all require calls to transpile your app at runtime, and lets you start your app with regular Node.
 
-routes(app);
-
-server(app);
-
-
-// module.exports = app;
-// export default app;
+require('./server');
+// had code here before and some reason above didnt work ?????
+// needed to be required in

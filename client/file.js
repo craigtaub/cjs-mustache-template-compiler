@@ -1,7 +1,5 @@
 import templates from './templates';
 import Mustache from 'mustache';
-// var templates = require('./templates');
-// var Mustache = require('mustache');
 
 function bootstrap() {
   setTimeout(
@@ -19,4 +17,3 @@ function bootstrap() {
 }
 
 export default {bootstrap};
-// module.exports = bootstrap

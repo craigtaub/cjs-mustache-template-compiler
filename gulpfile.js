@@ -17,7 +17,7 @@ var paths = {
   // client: ['client/*'], // not used as watchify watches all files
   server: ['views/*', 'server/*']
 };
-var serverEntryPoint = './server/entry-point.js';
+var serverEntryPoint = './server/app.js';
 var clientEntryPoint = './client/app.js';
 
 // delete all compiled files

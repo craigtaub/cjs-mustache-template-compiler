@@ -1,13 +1,9 @@
-// module.exports = function(app){
-//   app.get('/', function (req, res) {
-//     // res.send('Hello World!');
-//     res.render('first', {name: "craig"});
-//   });
-// };
+import express from 'express';
+const router = express.Router();
 
-export default function(app){
-  app.get('/', function (req, res) {
-    // res.send('Hello World!');
-    res.render('first', {name: "craig"});
-  });
-};
+router.get('/', function (req, res) {
+  // res.send('Hello World!');
+  res.render('first', {name: "craig"});
+});
+
+export default router;
