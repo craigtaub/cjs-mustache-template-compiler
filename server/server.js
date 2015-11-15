@@ -11,9 +11,17 @@ app.use(express.static(__dirname + '/../public')); // set static folder
 
 app.use(router);
 
-const server = app.listen(3000, function () {
-    const host = server.address().address;
-    const port = server.address().port;
+// function so easy point of entry...for app + testing
+function start() {
+  const server = app.listen(3000, function () {
+      const host = server.address().address;
+      const port = server.address().port;
 
-    console.log('Example app listening at http://%s:%s', host, port);
-});
+      console.log('Example app listening at http://%s:%s', host, port);
+  });
+  return server;
+}
+
+export {
+    start
+};

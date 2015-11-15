@@ -3,6 +3,7 @@
 Simple solution for compiling mustache templates into CommonJS Module for server-side or (via browserify) client-side use.
 Builds them into pre-compiled templates.
 Browserify handles converting CJS into Vanilla JS and builds it into bundle.
+Universal ES6 (client + server side).
 
 Setup
 
@@ -13,7 +14,7 @@ Architecture
 - Client-side: page + browserfiy + mustache
 
 TODO
-- tester
+- testing
 
 Research
 

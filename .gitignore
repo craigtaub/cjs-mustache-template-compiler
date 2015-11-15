@@ -1,3 +1,4 @@
 node_modules/
 public/build/
 client/templates.js
+npm-debug.log

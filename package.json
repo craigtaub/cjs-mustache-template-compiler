@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -22,15 +22,23 @@
   "devDependencies": {
     "babel": "^5.8.34",
     "babel-eslint": "^4.1.5",
+    "chai": "^3.4.1",
+    "chai-as-promised": "^5.1.0",
     "cjsc": "^1.0.3",
     "del": "^2.0.2",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
+    "gulp-istanbul": "^0.10.2",
+    "gulp-mocha": "^2.2.0",
     "gulp-nodemon": "^2.0.4",
     "gulp-shell": "^0.5.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.4.2",
     "gulp-util": "^3.0.7",
-    "mustache": "^2.2.0"
+    "mocha": "^2.3.3",
+    "mustache": "^2.2.0",
+    "node-mocks-http": "^1.5.0",
+    "sinon": "^1.17.2",
+    "sinon-as-promised": "^4.0.0"
   }
 }

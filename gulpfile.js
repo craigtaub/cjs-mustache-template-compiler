@@ -12,10 +12,18 @@ var source = require('vinyl-source-stream');
 var del = require('del');
 var shell = require('gulp-shell');
 var eslint = require('gulp-eslint');
+var mocha = require('gulp-mocha');
+var istanbul = require('gulp-istanbul');
 
+var ignoreErrors = false;
 var paths = {
   // client: ['client/*'], // not used as watchify watches all files
-    server: ['views/*', 'server/*']
+    server: ['views/*', 'server/*'],
+    coverage: {
+        report: './coverage/lcov-report/index.html',
+        dest: './coverage'
+    },
+    test: './test/**/*.js',
 };
 var serverEntryPoint = './server/app.js';
 var clientEntryPoint = './client/app.js';
@@ -90,6 +98,53 @@ gulp.task('lint', function () {
         // lint error, return the stream and pipe to failAfterError last.
         .pipe(eslint.failAfterError());
 });
+
+
+function handleErrors(taskName) {
+    return function(error, message) {
+        if (ignoreErrors) {
+            gutil.log(gutil.colors.red(taskName), JSON.stringify(message || error, null, 2));
+            this.emit && this.emit('end');
+        } else {
+            throw error;
+        }
+    };
+}
+
+// testing
+function test() {
+    var reporter = 'nyan', coverage = true;
+
+    var istanbulOptions = {
+        dir: paths.coverage.dest,
+        reportOpts: {
+            dir: paths.coverage.dest
+        }
+    };
+    var istanbulReportPath = paths.coverage.report;
+    var istanbulReportMessage = 'Report available at file://' + istanbulReportPath;
+    var mochaOptions = {
+        reporter: reporter,
+        compilers: {
+            js: require('babel/register')
+            // needs require here or at top...so tests transforms modules
+        }
+    };
+
+    return function() {
+        return gulp.src(paths.test)
+            .pipe(mocha(mochaOptions))
+            .on('error', handleErrors('Test Error:'))
+            .pipe(coverage ? istanbul.writeReports(istanbulOptions) : gutil.noop())
+            .on('end', function() {
+                if (coverage) {
+                    gutil.log(istanbulReportMessage);
+                }
+            });
+    };
+}
+
+gulp.task('test', test());
 
 // <!------ OLD ---->
 
