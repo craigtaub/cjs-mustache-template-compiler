@@ -10,9 +10,11 @@ Setup
 
 Architecture
 - Server-side: node + express + mustache
-- Client-side: page + browserfiy + mustache?
+- Client-side: page + browserfiy + mustache
 
 TODO
+- use Node modules + ES6
+- Universal ES6 (babel for client+server side)
 - linter
 - tester
 
