@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "babel": "^5.8.34",
+    "babel-eslint": "^4.1.5",
     "cjsc": "^1.0.3",
     "del": "^2.0.2",
     "gulp": "^3.9.0",

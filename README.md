@@ -13,9 +13,6 @@ Architecture
 - Client-side: page + browserfiy + mustache
 
 TODO
-- use Node modules + ES6
-- Universal ES6 (babel for client+server side)
-- linter
 - tester
 
 Research

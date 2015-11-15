@@ -15,63 +15,66 @@ var eslint = require('gulp-eslint');
 
 var paths = {
   // client: ['client/*'], // not used as watchify watches all files
-  server: ['views/*', 'server/*']
+    server: ['views/*', 'server/*']
 };
 var serverEntryPoint = './server/app.js';
 var clientEntryPoint = './client/app.js';
 
 // delete all compiled files
 gulp.task('clean', function() {
-  // You can use multiple globbing patterns as you would with `gulp.src`..not using a stream
-  return del(['public/build', 'client/templates.js']);
-});
-
-// build client-side scripts
-gulp.task('scripts', ['clean', 'templates'], function() {
-  var bundler = watchify(browserify(clientEntryPoint, { debug: true }).transform(babelify));
-
-  function rebundleJs() {
-    return bundler.bundle()
-          .on('error', function(error) {
-              gutil.log(gutil.colors.red('Browserify'), error.toString());
-              this.emit('end');
-           })
-          .pipe(source('bundle.min.js'))
-          .pipe(buffer())
-          .pipe(sourcemaps.init({loadMaps: true}))
-          .pipe(sourcemaps.write('./'))
-          .pipe(gulp.dest('public/build'))
-          .on('end', function() {
-                gutil.log('Browserify' + ':', gutil.colors.cyan('complete'));
-          });
-  }
-  bundler.on('update', rebundleJs);
-
-  rebundleJs();
+    // You can use multiple globbing patterns as you would with `gulp.src`..not using a stream
+    return del(['public/build', 'client/templates.js']);
 });
 
 // compile templates
 gulp.task('templates', function (cb) {
-  gutil.log('Compiling templatates');
-  return gulp.src('.')
-    .pipe(shell([
-      'node lib/parse.js >> client/templates.js'
-    ]));
+    gutil.log('Compiling templatates');
+    return gulp.src('.')
+        .pipe(shell([
+            'node lib/parse.js >> client/templates.js'
+        ]));
+});
+
+// build client-side scripts
+gulp.task('scripts', ['clean', 'templates'], function() {
+    var bundler = watchify(browserify(clientEntryPoint, { debug: true }).transform(babelify));
+
+    function rebundleJs() {
+        return bundler.bundle()
+            .on('error', function(error) {
+                gutil.log(gutil.colors.red('Browserify'), error.toString());
+                this.emit('end');
+            })
+            .pipe(source('bundle.min.js'))
+            .pipe(buffer())
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(sourcemaps.write('./'))
+            .pipe(gulp.dest('public/build'))
+            .on('end', function() {
+                gutil.log('Browserify' + ':', gutil.colors.cyan('complete'));
+            });
+    }
+    bundler.on('update', rebundleJs);
+
+    rebundleJs();
 });
 
 // Watch deals with server changes
 gulp.task('server', function() {
-  nodemon({
-      script: serverEntryPoint,
-      ext: 'js json',
-      watch: paths.server,
-      ignore: []
-  }).on('restart', function(files) {
-      gutil.log('Account restarted due to files: ', files);
-  });
+    nodemon({
+        script: serverEntryPoint,
+        ext: 'js json',
+        watch: paths.server,
+        ignore: []
+    }).on('restart', function(files) {
+        gutil.log('Account restarted due to files: ', files);
+    });
 });
 
 gulp.task('lint', function () {
+  // ESlint reads .eslintrc file by itself
+  // can pull in rules from external repo so they are shared cross apps
+
     // ESLint ignores files with "node_modules" paths.
     // So, it's best to have gulp ignore the directory as well.
     // Also, Be sure to return the stream from the task;
