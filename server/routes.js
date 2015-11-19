@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.get(
   '/',
-  firstRes,
-  midRes
+  firstRes.firstRes,
+  midRes.midRes
 );
 
 export default router;
