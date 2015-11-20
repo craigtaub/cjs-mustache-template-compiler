@@ -146,6 +146,8 @@ function test() {
 
 gulp.task('test', test());
 
+gulp.task('default', ['scripts', 'server']);
+
 // <!------ OLD ---->
 
 // // ISSUE: gulp-babel or babelify both dont worth in this format.

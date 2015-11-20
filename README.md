@@ -8,13 +8,19 @@ Universal ES6 (client + server side).
 Setup
 
     npm install
+    gulp
+
+Tests
+
+    gulp test
+
+Linter
+
+    gulp lint
 
 Architecture
 - Server-side: node + express + mustache
 - Client-side: page + browserfiy + mustache
-
-TODO
-- testing
 
 Research
 
