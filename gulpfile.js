@@ -14,6 +14,7 @@ var shell = require('gulp-shell');
 var eslint = require('gulp-eslint');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
+var isparta = require('isparta');
 
 var ignoreErrors = false;
 var paths = {
@@ -24,6 +25,7 @@ var paths = {
         dest: './coverage'
     },
     test: './test/**/*.js',
+    built: 'public/build'
 };
 var serverEntryPoint = './server/app.js';
 var clientEntryPoint = './client/app.js';
@@ -31,7 +33,8 @@ var clientEntryPoint = './client/app.js';
 // delete all compiled files
 gulp.task('clean', function() {
     // You can use multiple globbing patterns as you would with `gulp.src`..not using a stream
-    return del(['public/build', 'client/templates.js']);
+    // src('somethin').pipe(clean());
+    return del([paths.built, 'client/templates.js']);
 });
 
 // compile templates
@@ -48,6 +51,8 @@ gulp.task('scripts', ['clean', 'templates'], function() {
     var bundler = watchify(browserify(clientEntryPoint, { debug: true }).transform(babelify));
 
     function rebundleJs() {
+        gutil.log(gutil.colors.red(sourcemaps.init({loadMaps: true})));
+
         return bundler.bundle()
             .on('error', function(error) {
                 gutil.log(gutil.colors.red('Browserify'), error.toString());
@@ -57,7 +62,7 @@ gulp.task('scripts', ['clean', 'templates'], function() {
             .pipe(buffer())
             .pipe(sourcemaps.init({loadMaps: true}))
             .pipe(sourcemaps.write('./'))
-            .pipe(gulp.dest('public/build'))
+            .pipe(gulp.dest(paths.built))
             .on('end', function() {
                 gutil.log('Browserify' + ':', gutil.colors.cyan('complete'));
             });
@@ -111,10 +116,31 @@ function handleErrors(taskName) {
     };
 }
 
-// testing
-function test() {
-    var reporter = 'nyan', coverage = true;
+// Babel hook:
+// require('babel/register'); // not needed:
+//  - istanbul/isparta - uses its own in options, refuses to use this one
+//  - mocha - can set from options
 
+// Sets up coverage via Istanbul + isparta (coverage tool using ES6 via babel)
+function preTest() {
+  var istanbulOptions = {
+          instrumenter: isparta.Instrumenter,
+          includeUntested: true,
+          babel: { presets: 'es2015' } // required to transpile, ignores normal require hook.
+  };
+  del.sync([paths.coverage.dest]);
+  return gulp.src([
+      '{server,client}/**/*.js',
+      '!server/routes.js', // doesnt like spun-up stuff ???
+      '!server/app.js', // just point of entry
+      '!client/templates.js'] // dont run on compiled file
+    )
+    .pipe(istanbul(istanbulOptions)) // Covering files
+    .pipe(istanbul.hookRequire()); // Force `require` to return covered files
+}
+
+// testing
+function test(reporter, coverage) {
     var istanbulOptions = {
         dir: paths.coverage.dest,
         reportOpts: {
@@ -127,7 +153,7 @@ function test() {
         reporter: reporter,
         compilers: {
             js: require('babel/register')
-            // needs require here or at top...so tests transforms modules
+            // needs require here OR at top...so tests transforms modules
         }
     };
 
@@ -144,7 +170,11 @@ function test() {
     };
 }
 
-gulp.task('test', test());
+gulp.task('pre-test', preTest);
+
+gulp.task('test', test('spec'));
+
+gulp.task('test-coverage', ['pre-test'], test(null, true));
 
 gulp.task('default', ['scripts', 'server']);
 
