@@ -15,6 +15,7 @@ var eslint = require('gulp-eslint');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
 var isparta = require('isparta');
+var cjsmc = require('cjsmc');
 
 var ignoreErrors = false;
 var paths = {
@@ -31,20 +32,27 @@ var serverEntryPoint = './server/app.js';
 var clientEntryPoint = './client/app.js';
 
 // delete all compiled files
+// You can use multiple globbing patterns as you would with `gulp.src`..not using a stream
+// src('somethin').pipe(clean());
 gulp.task('clean', function() {
-    // You can use multiple globbing patterns as you would with `gulp.src`..not using a stream
-    // src('somethin').pipe(clean());
     return del([paths.built, 'client/templates.js']);
 });
 
 // compile templates
-gulp.task('templates', function (cb) {
+gulp.task('templates', ['clean'], function (cb) {
     gutil.log('Compiling templatates');
     return gulp.src('.')
         .pipe(shell([
-            'node lib/parse.js >> client/templates.js'
+            'node node_modules/cjsmc/lib/index.js >> client/templates.js'
         ]));
 });
+// gulp.task('templates', function (cb) {
+//     gutil.log('Compiling templatates');
+//     return gulp.src('.')
+//         .pipe(cjsmc())
+//         .pipe(gulp.dest('client/templates'));
+// });
+
 
 // build client-side scripts
 gulp.task('scripts', ['clean', 'templates'], function() {
