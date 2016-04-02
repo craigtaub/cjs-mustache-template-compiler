@@ -15,7 +15,8 @@ var eslint = require('gulp-eslint');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
 var isparta = require('isparta');
-var cjsmc = require('cjsmc');
+var cjsmc = require('gulp-cjsmc');
+var rename = require('gulp-rename');
 
 var ignoreErrors = false;
 var paths = {
@@ -38,20 +39,23 @@ gulp.task('clean', function() {
     return del([paths.built, 'client/templates.js']);
 });
 
-// compile templates
-gulp.task('templates', ['clean'], function (cb) {
+// compile templates using shell
+gulp.task('shell-templates', ['clean'], function (cb) {
     gutil.log('Compiling templatates');
     return gulp.src('.')
         .pipe(shell([
             'node node_modules/cjsmc/lib/index.js >> client/templates.js'
         ]));
 });
-// gulp.task('templates', function (cb) {
-//     gutil.log('Compiling templatates');
-//     return gulp.src('.')
-//         .pipe(cjsmc())
-//         .pipe(gulp.dest('client/templates'));
-// });
+
+// compile templates using gulp-cjsmc
+gulp.task('templates', ['clean'], function (cb) {
+    gutil.log('Compiling templatates');
+    return gulp.src('.')
+        .pipe(cjsmc())
+        .pipe(rename('templates.js'))
+        .pipe(gulp.dest('client'));
+});
 
 
 // build client-side scripts
